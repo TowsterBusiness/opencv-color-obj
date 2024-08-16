@@ -35,5 +35,33 @@ public class Main {
         Core.inRange(img, lower, upper, rangeMat);
 
         imageCodecs.imwrite("range.png", rangeMat);
+
+        Mat rangeMat = new Mat();
+        Core.inRange(img, lower, upper, rangeMat);
+
+        Core.bitwise_not(rangeMat, rangeMat);
+
+        SimpleBlobDetector blobDetector = SimpleBlobDetector.create();
+        SimpleBlobDetector_Params blobDetectorParams = blobDetector.getParams();
+        blobDetectorParams.set_filterByArea(true);
+        blobDetectorParams.set_maxArea(10000);
+        blobDetectorParams.set_minArea(50);
+        blobDetectorParams.set_filterByCircularity(false);
+        blobDetectorParams.set_filterByConvexity(true);
+        blobDetectorParams.set_maxConvexity(1000);
+        blobDetectorParams.set_minConvexity(1);
+        blobDetectorParams.set_filterByInertia(false);
+
+        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
+        blobDetector.detect(rangeMat, keypoints2);
+
+        Mat coloredRangedMat = new Mat();
+        Imgproc.cvtColor(rangeMat, coloredRangedMat, Imgproc.COLOR_GRAY2BGR);
+        List<KeyPoint> kps = keypoints2.toList();
+        for (KeyPoint kp : kps) {
+            int kpRadius = (int) kp.size / 2;
+            Imgproc.rectangle(coloredRangedMat, new Point(kp.pt.x - kpRadius, kp.pt.y - kpRadius),
+                    new Point(kp.pt.x + kpRadius, kp.pt.y + kpRadius), new Scalar(250, 50, 50), 3);
+        }
     }
 }
