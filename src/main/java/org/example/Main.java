@@ -47,5 +47,19 @@ public class Main {
         Imgproc.cvtColor(rangeMat, coloredRangedMat, Imgproc.COLOR_GRAY2BGR);
         Imgproc.drawContours(img, MOPList, -1, new Scalar(255, 0, 0), 3);
         imageCodecs.imwrite("contour.png", img);
+
+        double maxArea = -1;
+        int maxAreaIdx = 0;
+        for (int i = 0; i < MOPList.size(); i++) {
+            double area = Imgproc.contourArea(MOPList.get(i));
+            if (area > maxArea) {
+                maxArea = area;
+                maxAreaIdx = i;
+            }
+        }
+
+        Imgproc.drawContours(img, MOPList, maxAreaIdx, new Scalar(0, 255, 0), 3);
+
+        Imgproc.rectangle(img, Imgproc.boundingRect(MOPList.get(maxAreaIdx)), new Scalar(0, 0, 255), 3);
     }
 }
